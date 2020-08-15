@@ -16,17 +16,15 @@
 <body class="container text-center">
     <h1>Todo MIT</h1>
     <div class="py-4">
-        {% with messages=get_flashed_messages() %}
-        {% if messages %}
-        <div class="alert alert-success">
-            Object deleted successfully
-        </div>
-        {% else %}
-        <div class="alert alert-danger">
-            Object not deleted
-        </div>
-        {% endif %}
-        {% endwith %}
+        {% with messages = get_flashed_messages() %}
+	  {% if messages %}
+	    {% for message in messages %}
+		  <div class="alert alert-warning alert-dismissible" role="alert">
+			{{message}}
+		  </div>
+		{% endfor %}
+	  {% endif %}
+	{% endwith %}
     </div>
     <div>
         <div class="row">

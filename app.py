@@ -6,6 +6,7 @@ from datetime import datetime
 from flask_pymongo import PyMongo
 
 app = Flask(__name__)
+app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 app.config.from_object("config.config")
 mongo = PyMongo(app)
 db = mongo.db
@@ -30,9 +31,9 @@ def read_from_db():
 def delete_from_db(id):
     deleteRes=db.todo.delete_one({"_id":ObjectId(id)})
     if deleteRes.deleted_count >0:
-        return "True"
+        return "Objected deleted successfully"
     else:
-        return "False"
+        return "object not deleted"
 
 
 @app.route('/put_task', methods=['GET', 'POST'])
@@ -46,7 +47,6 @@ def put_task():
         print('Data from pymonog: ',tasks)
     return render_template('index.html', tasks=tasks)
 
-
 @app.route('/deleteTask',methods=['GET','POST'])
 def delete_task():
     if request.method=='GET':
@@ -58,5 +58,5 @@ def delete_task():
 
 
 if __name__ == '__main__':
-    app.secret_key = "jflskfjlsdfjl4u923urik"
-    app.run(debug=True,secret_key="skfjskfsdlkfjo8reuoij")
+    app.secret_key=b'_5#y2L"F4Q8z\n\xec]/'
+    app.run(debug=True)
