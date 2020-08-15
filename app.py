@@ -1,28 +1,62 @@
-from flask import Flask,request, render_template, Markup
+from flask import Flask, request, render_template, Markup, jsonify, redirect, url_for, flash
 import json
+from bson import ObjectId
 import chardet
+from datetime import datetime
+from flask_pymongo import PyMongo
 
 app = Flask(__name__)
 app.config.from_object("config.config")
+mongo = PyMongo(app)
+db = mongo.db
+
+
+
 
 @app.route('/')
 def hello_world():
-    return render_template('index.html')
+    tasks = read_from_db()
+    print('Data from pymonog: ',tasks)
+    return render_template('index.html', tasks=tasks)
 
-@app.route('/put_task',methods=['GET','POST'])
+def write_to_db(obj):
+    res = db.todo.insert(obj)
+    print(res)
+
+def read_from_db():
+    tasks=list(db.todo.find())
+    return tasks
+
+def delete_from_db(id):
+    deleteRes=db.todo.delete_one({"_id":ObjectId(id)})
+    if deleteRes.deleted_count >0:
+        return "True"
+    else:
+        return "False"
+
+
+@app.route('/put_task', methods=['GET', 'POST'])
 def put_task():
-    if request.method=='POST':
-        task=request.form['task']
-        priority=request.form['priority']
-        print(task,priority)
-        tasks=[
-            {'task':task,'priority':priority,'date':datetime.now()},
-            {'task':'task1','priority':'priority2','date':datetime.now()},
-            {'task':'task2','priority':'priority2','date':datetime.now()}
-        ]
-    return render_template('index.html',tasks=tasks)
-
-if __name__=='__main__':
-    app.run(debug=True)
+    if request.method == 'POST':
+        task = request.form['task']
+        priority = request.form['priority']
+        write_to_db({'tasks': task, 'priority': priority, 'date': datetime.now()})
+        print(task, priority)
+        tasks = read_from_db()
+        print('Data from pymonog: ',tasks)
+    return render_template('index.html', tasks=tasks)
 
 
+@app.route('/deleteTask',methods=['GET','POST'])
+def delete_task():
+    if request.method=='GET':
+        id=request.args.get('id',default=None,type=str)
+        print(id)
+        status=delete_from_db(id)
+        flash(status)
+    return redirect(url_for('hello_world'))
+
+
+if __name__ == '__main__':
+    app.secret_key = "jflskfjlsdfjl4u923urik"
+    app.run(debug=True,secret_key="skfjskfsdlkfjo8reuoij")

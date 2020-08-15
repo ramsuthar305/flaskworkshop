@@ -15,12 +15,24 @@
 
 <body class="container text-center">
     <h1>Todo MIT</h1>
-
-    <div >
+    <div class="py-4">
+        {% with messages=get_flashed_messages() %}
+        {% if messages %}
+        <div class="alert alert-success">
+            Object deleted successfully
+        </div>
+        {% else %}
+        <div class="alert alert-danger">
+            Object not deleted
+        </div>
+        {% endif %}
+        {% endwith %}
+    </div>
+    <div>
         <div class="row">
             <div class=" border col-md-2">
                 <h4>Date</h4>
-                
+
             </div>
             <div class=" border col-md-7">
                 <h4>Task name</h4>
@@ -32,14 +44,16 @@
         {% for tasks in tasks %}
         <div class="row">
             <div class=" border col-md-2">
-                
+
                 <h4>{{tasks.date}}</h4>
             </div>
             <div class=" border col-md-7">
-                <h4>{{tasks.task}}</h4>
+                <h4>{{tasks.tasks}}</h4>
             </div>
             <div class=" border col-md-3">
-                <h4>{{tasks.priority}}</h4>
+                <h4>{{tasks.priority}}
+                    <a href="{{ url_for('delete_task',id=tasks._id) }}" class="btn btn-danger" type="submit">Delete</a>
+                </h4>
             </div>
         </div>
         {% endfor %}
